@@ -1,0 +1,4 @@
+build/
+.*
+package/Exceptions/__pycache__
+package/*.cpp

@@ -1,0 +1,3 @@
+[submodule "package/src"]
+	path = package/src
+	url = https://github.com/disa-mhembere/fg-graphyti.git
