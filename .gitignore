@@ -1,4 +1,5 @@
 build/
+graphyti/Exceptions/__pycache__
+graphyti/*.cpp
+graphyti/__pycache__
 .*
-package/Exceptions/__pycache__
-package/*.cpp

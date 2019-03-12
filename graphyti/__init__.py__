@@ -1,0 +1,7 @@
+import sys
+PYTHON_VERSION = sys.version_info[0]
+
+if PYTHON_VERSION == 2:
+    from package import Graph
+else:
+    from .package import Graph

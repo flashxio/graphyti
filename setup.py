@@ -9,8 +9,6 @@ from Cython.Build import cythonize
 #from utils import find_header_loc
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-NB_COMPILE_JOBS = 32
-
 _REPO_ISSUES_ = "https://github.com/flashxio/graphyti/issues"
 _OS_SUPPORTED_ = {"linux":"linux", "mac":"darwin"}
 
@@ -44,29 +42,54 @@ if OS == _OS_SUPPORTED_["linux"]:
 
 # For C++ libraries
 libsafs = ("safs",
-        {"sources": glob(os.path.join("package", "src", "libsafs", "*.cpp"))})
+        {"sources": glob(os.path.join("graphyti", "src", "libsafs", "*.cpp"))})
 libmatrix = ("matrix",
-        {"sources": glob(os.path.join("package", "src", "matrix", "*.cpp"))})
+        {"sources": glob(os.path.join("graphyti", "src", "matrix", "*.cpp"))})
 libgraph = ("graph",
-        {"sources": glob(os.path.join("package", "src", "flash-graph", "*.cpp"))})
+        {"sources": glob(os.path.join("graphyti", "src", "flash-graph", "*.cpp"))})
+libgraph_algs = ("graph-algs",
+        {"sources": glob(os.path.join("graphyti", "src", "flash-graph",
+        "libgraph-algs", "*.cpp"))})
 
-libraries = [libmatrix, libsafs, libgraph]
-sources = [os.path.join("package", "graphyti.pyx")]
+libraries = [libsafs, libmatrix, libgraph, libgraph_algs]
+sources = [os.path.join("graphyti", "graphyti.pyx")]
+# sources.append(os.path.join("graphyti", "src", "flash-graph",
+    # "bindings", "*.cpp"))
 
 extra_compile_args = ["-std=c++11", "-O3", "-fPIC", "-Wno-attributes",
         "-Wno-unused-variable", "-Wno-unused-function", "-fopenmp",
-        "-std=c++11", "-I.", "-Ipackage", "-Ipackage/src/matrix",
-        "-Ipackage/src/libsafs","-Ipackage/src/flash-graph",
-        "-Ipackage/src/flash-graph/bindings" ]
+        "-I.", "-Igraphyti", "-Igraphyti/src/matrix",
+        "-Igraphyti/src/libsafs", "-Igraphyti/src/flash-graph",
+        "-Igraphyti/src/flash-graph/libgraph-algs",
+        "-Igraphyti/src/flash-graph/bindings", "-DUSE_NUMA"]
+
+extra_link_args =  [
+        "-Lgraphyti/src/flash-graph/libgraph-algs", "-lgraph-algs",
+        "-Lgraphyti/src/flash-graph", "-lgraph",
+            "-Lgraphyti/src/matrix", "-lmatrix",
+            "-Lgraphyti/src/libsafs", "-lsafs",
+            "-lpthread", "-lnuma", "-lcblas", "-rdynamic", "-lrt", "-mavx",
+            "-fopenmp"
+        ]
+
+
+# Build cython modules
+ext_modules = cythonize(Extension(
+    "graphyti.graphyti",                                # the extension name
+    sources=sources,
+    language="c++",
+    extra_compile_args=extra_compile_args,
+    extra_link_args=extra_link_args))
 
 class graphyti_clib(build_clib, object):
     def initialize_options(self):
         super(graphyti_clib, self).initialize_options()
         self.include_dirs = [
-                os.path.join("package", "src", "matrix"),
-                os.path.join("package", "src", "libsafs"),
-                os.path.join("package", "src", "flash-graph"),
-                os.path.join("package", "src", "flash-graph", "bindings") ]
+                os.path.join("graphyti", "src", "matrix"),
+                os.path.join("graphyti", "src", "libsafs"),
+                os.path.join("graphyti", "src", "flash-graph"),
+                os.path.join("graphyti", "src", "flash-graph", "libgraph-algs"),
+                os.path.join("graphyti", "src", "flash-graph", "bindings") ]
         #self.include_dirs.append(find_header_loc("numpy"))
         self.define = [ ("USE_NUMA", None) ]
 
@@ -99,31 +122,23 @@ class graphyti_clib(build_clib, object):
                     output_dir=self.build_clib,
                     debug=self.debug)
 
-# Build cython modules
-ext_modules = cythonize(Extension(
-    "package.graphyti",                                # the extension name
-    sources=sources,
-    language="c++",
-    extra_compile_args=extra_compile_args,
-    extra_link_args=['-fopenmp']))
-
 setup(
     name="graphyti",
     version="0.0.1",
     description="A parallel and scalable graph library built on FlashGraph",
     long_description="FlashGraph Graphyti scales graph operations beyond" +\
-            "memory through capacity with SSDs",
+            "memory through out-of-core processing with SSDs",
     url="https://github.com/flashxio/graphyti",
     author="Disa Mhembere, Da Zheng",
     author_email="disa@cs.jhu.edu",
     license="Apache License, Version 2.0",
     keywords="graph parallel scalable machine-learning",
-    # install_requires=[
-        # "numpy",
-        # "Cython>=0.26",
-        # "cython>=0.26",
-        # ],
-    package_dir = {"graphyti": os.path.join("package")},
+    install_requires=[
+        "numpy",
+        "Cython>=0.26",
+        "cython>=0.26",
+        ],
+    package_dir = {"graphyti": "graphyti"},
     packages=["graphyti", "graphyti.Exceptions"],
     libraries =libraries,
     cmdclass = {'build_clib': graphyti_clib, 'build_ext': build_ext},

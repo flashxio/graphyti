@@ -30,6 +30,7 @@ __author__ = "Disa Mhembere, Da Zheng"
 __maintainer__ = "Disa Mhembere <disa@jhu.edu>"
 __package__ = "graphyti"
 
+ctypedef unsigned vertex_id_t
 
 cdef extern from "src/flash-graph/bindings/CGraph.h" namespace "fg":
     cdef cppclass CGraph:
@@ -37,16 +38,23 @@ cdef extern from "src/flash-graph/bindings/CGraph.h" namespace "fg":
         CGraph(const string& graph_file, const string& index_file,
                 const string& config_file) except +
         vector[size_t] coreness(const size_t kmax, const size_t kmin)
+        const vertex_id_t vcount()
+
+def ba(s):
+    return bytearray(s, "utf8")
 
 cdef class Graph:
     cdef CGraph cg
 
     def __cinit__(self, const string& graph_file, const string& index_file,
             const string& config_file):
-        self.cg = CGraph(graph_file, index_file, config_file)
+        self.cg = CGraph(ba(graph_file), ba(index_file), ba(config_file))
 
     def coreness(self, kmax=0, kmin=0):
         return self.cg.coreness(kmax, kmin)
 
-    def const vertex_id_t vcount():
+    def vcount(self):
         return self.cg.vcount()
+
+    def __repr__(self):
+        return "Python Graph class"
