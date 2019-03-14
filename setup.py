@@ -43,34 +43,28 @@ if OS == _OS_SUPPORTED_["linux"]:
 # For C++ libraries
 libsafs = ("safs",
         {"sources": glob(os.path.join("graphyti", "src", "libsafs", "*.cpp"))})
-libmatrix = ("matrix",
-        {"sources": glob(os.path.join("graphyti", "src", "matrix", "*.cpp"))})
 libgraph = ("graph",
         {"sources": glob(os.path.join("graphyti", "src", "flash-graph", "*.cpp"))})
 libgraph_algs = ("graph-algs",
         {"sources": glob(os.path.join("graphyti", "src", "flash-graph",
         "libgraph-algs", "*.cpp"))})
 
-libraries = [libsafs, libmatrix, libgraph, libgraph_algs]
+libraries = [libsafs, libgraph, libgraph_algs]
 sources = [os.path.join("graphyti", "graphyti.pyx")]
-# sources.append(os.path.join("graphyti", "src", "flash-graph",
-    # "bindings", "*.cpp"))
 
 extra_compile_args = ["-std=c++11", "-O3", "-fPIC", "-Wno-attributes",
         "-Wno-unused-variable", "-Wno-unused-function", "-fopenmp",
-        "-I.", "-Igraphyti", "-Igraphyti/src/matrix",
+        "-I.", "-Igraphyti",
         "-Igraphyti/src/libsafs", "-Igraphyti/src/flash-graph",
         "-Igraphyti/src/flash-graph/libgraph-algs",
-        "-Igraphyti/src/flash-graph/bindings", "-DUSE_NUMA"]
+        "-Igraphyti/src/flash-graph/bindings", "-DUSE_NUMA"] # -DNDEBUG
 
 extra_link_args =  [
         "-Lgraphyti/src/flash-graph/libgraph-algs", "-lgraph-algs",
         "-Lgraphyti/src/flash-graph", "-lgraph",
-            "-Lgraphyti/src/matrix", "-lmatrix",
             "-Lgraphyti/src/libsafs", "-lsafs",
-            "-lpthread", "-lnuma", "-lcblas", "-rdynamic", "-lrt", "-mavx",
-            "-fopenmp"
-        ]
+            "-lpthread", "-lnuma", "-lcblas",
+            "-rdynamic", "-lrt", "-mavx", "-fopenmp"]
 
 
 # Build cython modules
@@ -85,7 +79,6 @@ class graphyti_clib(build_clib, object):
     def initialize_options(self):
         super(graphyti_clib, self).initialize_options()
         self.include_dirs = [
-                os.path.join("graphyti", "src", "matrix"),
                 os.path.join("graphyti", "src", "libsafs"),
                 os.path.join("graphyti", "src", "flash-graph"),
                 os.path.join("graphyti", "src", "flash-graph", "libgraph-algs"),

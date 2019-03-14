@@ -4,9 +4,17 @@ all:
 build:
 	python3 setup.py build
 
-
 install:
 	python3 setup.py install
+
+dist:
+	python setup.py sdist
+up:
+	twine upload dist/*
+
+up-test:
+	twine upload dist/* -r testpypi
+	pip install -i https://testpypi.python.org/pypi graphyti
 
 clean:
 	rm -rf build
