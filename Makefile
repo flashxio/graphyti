@@ -8,7 +8,7 @@ install:
 	python3 setup.py install
 
 dist:
-	python setup.py sdist
+	python3 setup.py sdist
 up:
 	twine upload dist/*
 
