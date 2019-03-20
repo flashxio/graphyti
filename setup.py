@@ -7,7 +7,6 @@ from Cython.Distutils import build_ext
 from distutils.core import setup, Extension
 from Cython.Build import cythonize
 #from utils import find_header_loc
-dir_path = os.path.dirname(os.path.realpath(__file__))
 
 _REPO_ISSUES_ = "https://github.com/flashxio/graphyti/issues"
 _OS_SUPPORTED_ = {"linux":"linux", "mac":"darwin"}
@@ -50,30 +49,26 @@ libgraph_algs = ("graph-algs",
         "libgraph-algs", "*.cpp"))})
 
 libraries = [libsafs, libgraph, libgraph_algs]
+
 sources = [os.path.join("graphyti", "graphyti.pyx")]
 
-extra_compile_args = ["-std=c++11", "-O3", "-fPIC", "-Wno-attributes",
-        "-Wno-unused-variable", "-Wno-unused-function", "-fopenmp",
-        "-I.", "-Igraphyti",
-        "-Igraphyti/src/libsafs", "-Igraphyti/src/flash-graph",
+extra_compile_args = ["-std=c++11", "-fPIC", "-Wno-attributes",
+        "-Wno-unused-variable", "-Wno-unused-function",
+        "-I.",
+        "-Igraphyti/src/flash-graph/bindings",
         "-Igraphyti/src/flash-graph/libgraph-algs",
-        "-Igraphyti/src/flash-graph/bindings", "-DUSE_NUMA"] # -DNDEBUG
+        "-Igraphyti/src/flash-graph/utils",
+        "-Igraphyti/src/utils",
+        "-Igraphyti/src/flash-graph",
+        "-Igraphyti/src/flash-graph/graphlab",
+        "-Igraphyti/src/libsafs",
+        "-fopenmp", "-DUSE_NUMA"]
 
-extra_link_args =  [
+extra_link_args = [
         "-Lgraphyti/src/flash-graph/libgraph-algs", "-lgraph-algs",
         "-Lgraphyti/src/flash-graph", "-lgraph",
-            "-Lgraphyti/src/libsafs", "-lsafs",
-            "-lpthread", "-lnuma", "-lcblas",
-            "-rdynamic", "-lrt", "-mavx", "-fopenmp"]
-
-
-# Build cython modules
-ext_modules = cythonize(Extension(
-    "graphyti.graphyti",                                # the extension name
-    sources=sources,
-    language="c++",
-    extra_compile_args=extra_compile_args,
-    extra_link_args=extra_link_args))
+        "-Lgraphyti/src/libsafs", "-lsafs",
+        "-lpthread", "-lnuma", "-rdynamic", "-lrt", "-mavx", "-fopenmp"]
 
 class graphyti_clib(build_clib, object):
     def initialize_options(self):
@@ -82,8 +77,9 @@ class graphyti_clib(build_clib, object):
                 os.path.join("graphyti", "src", "libsafs"),
                 os.path.join("graphyti", "src", "flash-graph"),
                 os.path.join("graphyti", "src", "flash-graph", "libgraph-algs"),
-                os.path.join("graphyti", "src", "flash-graph", "bindings") ]
-        #self.include_dirs.append(find_header_loc("numpy"))
+                os.path.join("graphyti", "src", "flash-graph", "bindings"),
+                os.path.join("graphyti", "src", "flash-graph", "utils"),
+                ]
         self.define = [ ("USE_NUMA", None) ]
 
     def build_libraries(self, libraries):
@@ -115,9 +111,17 @@ class graphyti_clib(build_clib, object):
                     output_dir=self.build_clib,
                     debug=self.debug)
 
+# Build cython modules
+ext_modules = cythonize(Extension(
+    "graphyti.graphyti",                                # the extension name
+    sources=sources,
+    language="c++",
+    extra_compile_args=extra_compile_args,
+    extra_link_args=extra_link_args))
+
 setup(
     name="graphyti",
-    version="0.0.1",
+    version="0.0.1a",
     description="A parallel and scalable graph library built on FlashGraph",
     long_description="FlashGraph Graphyti scales graph operations beyond" +\
             "memory through out-of-core processing with SSDs",

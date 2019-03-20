@@ -5,4 +5,4 @@ if PYTHON_VERSION == 2:
     from graphyti import Graph
 else:
     from .graphyti import Graph
-    from .graphyti import Util
+    # from .graphyti import Util

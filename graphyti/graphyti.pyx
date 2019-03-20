@@ -20,10 +20,10 @@ from Exceptions.runtime import UnsupportedError
 from os.path import abspath
 from os.path import exists
 from os.path import join as pjoin
-import psutil
+import multiprocessing
 
 # Metadata
-__version__ = "0.0.1"
+__version__ = "0.0.1a"
 __author__ = "Disa Mhembere, Da Zheng"
 __maintainer__ = "Disa Mhembere <disa@cs.jhu.edu>"
 __package__ = "graphyti"
@@ -61,26 +61,26 @@ cdef extern from "src/flash-graph/bindings/CGraph.h" namespace "fg":
     # cpdef el2fg(vector[string] extfns, string safs_adj_fn,
             # string safs_index_fn, bool directed, int nthread)
 
-cdef class Util:
-    @staticmethod
-    def edge2graphyti(edgeloc, outadj, outidx, directed=True,
-            nthread=psutil.cpu_count(), to_safs=False):
+# cdef class Util:
+    # @staticmethod
+    # def edge2graphyti(edgeloc, outadj, outidx, directed=True,
+            # nthread=multiprocessing.cpu_count(), to_safs=False):
 
-        if not isinstance (edgeloc, list):
-            edgeloc = [edgeloc]
+        # if not isinstance (edgeloc, list):
+            # edgeloc = [edgeloc]
 
-        for fn in edgeloc:
-            if not os.path.exists(edgeloc):
-                raise RuntimeError("Cannot find input file: '{}'\n".format(fn))
+        # for fn in edgeloc:
+            # if not os.path.exists(edgeloc):
+                # raise RuntimeError("Cannot find input file: '{}'\n".format(fn))
 
-        # FIXME: Make run
-        # el2fg(list(map(string, edgeloc)), outadj, outidx, directed, nthread)
+        # # FIXME: Make run
+        # # el2fg(list(map(string, edgeloc)), outadj, outidx, directed, nthread)
 
-        if to_safs:
-            pass # TODO: Move and ingest
+        # if to_safs:
+            # pass # TODO: Move and ingest
 
-# TODO: Wrap SAFS-util for ingestion
-# TODO: Interactive configuration file creation for safs & storage of it
+# # TODO: Wrap SAFS-util for ingestion
+# # TODO: Interactive configuration file creation for safs & storage of it
 
 def ba(s: str) -> bytearray:
     return bytearray(s, "utf8")
@@ -135,6 +135,6 @@ cdef class Graph:
 
     def __str__(self):
         return "Graphyti Graph:\n {}, {}\nv: {}, e: {}\n".format(
-                ("Directed" if self.directed() else "Undirected"),
+                ("Directed" if self.is_directed() else "Undirected"),
                     ("In-mem" if self.is_in_mem() else "On-Disk"),
                     self.vcount(), self.ecount())

@@ -1,5 +1,4 @@
 include graphyti/src/libsafs/*.h
-include graphyti/src/matrix/*.h
 include graphyti/src/flash-graph/*.h
 include graphyti/src/flash-graph/bindings/*.h
 include graphyti/src/flash-graph/utils/el2fg.h

@@ -22,7 +22,7 @@ graph engine.
 ## System dependencies
 
 The following are required for Linux:
-- `libboost-dev libboost-system-dev libboost-filesystem-dev libaio-dev libatlas-base-dev zlib1g-dev`
+- `libaio-dev libatlas-base-dev zlib1g-dev`
 - `libnuma-dev libhwloc-dev`
 
 ## Installation
