@@ -62,12 +62,12 @@ extra_compile_args = ["-std=c++11", "-fPIC", "-Wno-attributes",
         "-Igraphyti/src/flash-graph",
         "-Igraphyti/src/flash-graph/graphlab",
         "-Igraphyti/src/libsafs",
-        "-fopenmp", "-DUSE_NUMA"]
+        "-fopenmp", "-DUSE_HWLOC", "-DUSE_LIBAIO", "-DUSE_NUMA"]
 
 extra_link_args = [
         "-Lgraphyti/src/flash-graph/libgraph-algs", "-lgraph-algs",
         "-Lgraphyti/src/flash-graph", "-lgraph",
-        "-Lgraphyti/src/libsafs", "-lsafs",
+        "-Lgraphyti/src/libsafs", "-lsafs", "-lhwloc", "-laio",
         "-lpthread", "-lnuma", "-rdynamic", "-lrt", "-mavx", "-fopenmp"]
 
 class graphyti_clib(build_clib, object):
@@ -80,7 +80,8 @@ class graphyti_clib(build_clib, object):
                 os.path.join("graphyti", "src", "flash-graph", "bindings"),
                 os.path.join("graphyti", "src", "flash-graph", "utils"),
                 ]
-        self.define = [ ("USE_NUMA", None) ]
+        self.define = [ ("USE_HWLOC", None), ("USE_LIBAIO", None),
+                ("USE_NUMA", None) ]
 
     def build_libraries(self, libraries):
         for (lib_name, build_info) in libraries:
