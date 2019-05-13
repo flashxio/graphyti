@@ -6,7 +6,7 @@ from distutils.errors import DistutilsSetupError
 from Cython.Distutils import build_ext
 from distutils.core import setup, Extension
 from Cython.Build import cythonize
-#from utils import find_header_loc
+from utils import find_header_loc
 
 _REPO_ISSUES_ = "https://github.com/flashxio/graphyti/issues"
 _OS_SUPPORTED_ = {"linux":"linux", "mac":"darwin"}
@@ -64,6 +64,8 @@ extra_compile_args = ["-std=c++11", "-fPIC", "-Wno-attributes",
         "-Igraphyti/src/libsafs",
         "-fopenmp", "-DUSE_HWLOC", "-DUSE_LIBAIO", "-DUSE_NUMA"]
 
+extra_compile_args.append("-I"+find_header_loc("numpy"))
+
 extra_link_args = [
         "-Lgraphyti/src/flash-graph/libgraph-algs", "-lgraph-algs",
         "-Lgraphyti/src/flash-graph", "-lgraph",
@@ -82,6 +84,7 @@ class graphyti_clib(build_clib, object):
                 ]
         self.define = [ ("USE_HWLOC", None), ("USE_LIBAIO", None),
                 ("USE_NUMA", None) ]
+        # self.include_dirs.append(find_header_loc("numpy"))
 
     def build_libraries(self, libraries):
         for (lib_name, build_info) in libraries:
