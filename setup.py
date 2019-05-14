@@ -69,8 +69,8 @@ extra_compile_args.append("-I"+find_header_loc("numpy"))
 extra_link_args = [
         "-Lgraphyti/src/flash-graph/libgraph-algs", "-lgraph-algs",
         "-Lgraphyti/src/flash-graph", "-lgraph",
-        "-Lgraphyti/src/libsafs", "-lsafs", "-lhwloc", "-laio",
-        "-lpthread", "-lnuma", "-rdynamic", "-lrt", "-mavx", "-fopenmp"]
+        "-Lgraphyti/src/libsafs", "-lsafs", "-lrt", "-lz", "-lhwloc", "-laio",
+         "-lnuma", "-lpthread", "-rdynamic", "-mavx", "-fopenmp"]
 
 class graphyti_clib(build_clib, object):
     def initialize_options(self):
