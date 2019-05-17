@@ -21,9 +21,10 @@ clean:
 	rm -rf MANIFEST
 	rm -rf dist
 	rm -f *.pyc
+	rm -rf tmp
+	rm -rf *egg*
 	rm -rf __pycache__
 	rm -rf graphyti/__pycache__
-	rm -rf graphyti/*.cpp
 	rm -rf graphyti/Exceptions/__pycache__
 
 remove:
