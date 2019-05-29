@@ -136,7 +136,7 @@ extra_compile_args = ["-std=c++11", "-fPIC", "-Wno-attributes",
         ]
 
 extra_compile_args.extend(map((lambda i : "-I"+i) , _include_dirs))
-extra_compile_args.extend(["-fopenmp", "-DUSE_HWLOC",
+extra_compile_args.extend(["-fopenmp",
     "-DUSE_LIBAIO", "-DUSE_NUMA"])
 
 extra_link_args = [
@@ -173,7 +173,7 @@ class graphyti_clib(build_clib, object):
                 os.path.join("graphyti", "src", "flash-graph", "bindings"),
                 os.path.join("graphyti", "src", "flash-graph", "utils"),
                 ]
-        self.define = [ ("USE_HWLOC", None), ("USE_LIBAIO", None),
+        self.define = [ ("USE_LIBAIO", None),
                 ("USE_NUMA", None) ]
 
     def build_libraries(self, libraries):
