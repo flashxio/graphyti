@@ -131,16 +131,14 @@ _include_dirs = [".",
         "graphyti/src/libsafs",
         ]
 
-extra_compile_args = ["-std=c++11", "-fPIC", "-Wno-attributes",
-        "-Wno-unused-variable", "-Wno-unused-function"
+extra_compile_args = ["-std=c++11", "-DUSE_HWLOC",
+    "-DUSE_LIBAIO", "-DUSE_NUMA","-mavx", "-fPIC", "-DSTATISTICS", "-fopenmp",
+        "-Wno-attributes", "-Wno-unused-variable", "-Wno-unused-function", "-MD"
         ]
 
 extra_compile_args.extend(map((lambda i : "-I"+i) , _include_dirs))
-extra_compile_args.extend(["-fopenmp",
-    "-DUSE_LIBAIO", "-DUSE_NUMA"])
 
-extra_link_args = [
-        "-Lgraphyti/src/flash-graph/libgraph-algs", "-lgraph-algs",
+extra_link_args = ["-Lgraphyti/src/flash-graph/libgraph-algs", "-lgraph-algs",
         "-Lgraphyti/src/flash-graph", "-lgraph",
         "-Lgraphyti/src/libsafs", "-lsafs", "-lrt", "-lz", "-lhwloc", "-laio",
          "-lnuma", "-lpthread", "-rdynamic", "-mavx", "-fopenmp"]
@@ -157,7 +155,13 @@ ext_modules = [
         ],
 
         extra_compile_args=extra_compile_args,
-        extra_link_args=extra_link_args),
+        # extra_link_args=extra_link_args,
+        define_macros=[("USE_HWLOC", None), ("USE_LIBAIO", None),
+                ("USE_NUMA", None), ("STATISTICS", None)],
+        libraries = ["graph", "safs", "rt", "z", "hwloc", "aio",
+            "numa", "pthread"],
+        extra_objects=["-fopenmp"],
+        )
 ]
 
 ext_modules[0].include_dirs.extend(_include_dirs)
@@ -173,8 +177,8 @@ class graphyti_clib(build_clib, object):
                 os.path.join("graphyti", "src", "flash-graph", "bindings"),
                 os.path.join("graphyti", "src", "flash-graph", "utils"),
                 ]
-        self.define = [ ("USE_LIBAIO", None),
-                ("USE_NUMA", None) ]
+        self.define = [ ("USE_HWLOC", None), ("USE_LIBAIO", None),
+                ("USE_NUMA", None), ("STATISTICS", None)]
 
     def build_libraries(self, libraries):
         for (lib_name, build_info) in libraries:
@@ -191,8 +195,8 @@ class graphyti_clib(build_clib, object):
             include_dirs = build_info.get("include_dirs")
 
             # pass flags to compiler
-            extra_preargs = ["-std=c++11", "-Wno-unused-function"]
-            extra_preargs.append("-fopenmp")
+            extra_preargs = ["-std=c++11", "-Wno-unused-function", "-MD",
+                    "-mavx", "-fopenmp"]
 
             objects = self.compiler.compile(sources,
                     output_dir=self.build_temp,
@@ -207,7 +211,7 @@ class graphyti_clib(build_clib, object):
 
 setup(
     name="graphyti",
-    version="0.0.1a",
+    version="0.0.2",
     description="A parallel and scalable graph library built on FlashGraph",
     long_description="Graphyti scales graph operations beyond" +\
             "memory through out-of-core processing with SSDs using FlashGraph",
