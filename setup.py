@@ -6,6 +6,10 @@ from setuptools.command.build_ext import build_ext
 from setuptools.command.build_clib import build_clib
 import setuptools
 
+# Choose compiler
+os.environ["CC"] = "g++"
+os.environ["CXX"] = "g++"
+
 _REPO_ISSUES_ = "https://github.com/flashxio/graphyti/issues"
 _OS_SUPPORTED_ = {"linux":"linux", "mac":"darwin"}
 
@@ -26,15 +30,40 @@ if OS not in list(_OS_SUPPORTED_.values()):
     raise RuntimeError("Operating system {}\n." +\
             "Please post an issue at {}\n".format(raw_os, _REPO_ISSUES_))
 
+# The following default compiler arguments need correction
+# -Wstrict-prototypes --> ""
+# -O2 --> -O3
+# -DNDEBUG --> ""
+
+# Vars of interest
+# CFLAGS
+# OPT
+# PY_CORE_CFLAGS
+# PY_CFLAGS
+
 # Hack to stop -Wstrict-prototypes warning on linux
 if OS == _OS_SUPPORTED_["linux"]:
     from distutils import sysconfig
 
+    keywords = {"-Wstrict-prototypes": "", "-O2": "-O3", "-O1": "-O3",
+            "-DNDEBUG": ""}
+
+    for key in sysconfig._config_vars.keys():
+        if type(sysconfig._config_vars[key]) == str:
+            # print("The key: '{}'.The value: '{}'\n".format(key, value))
+            for keyword in keywords.keys():
+                if keyword in sysconfig._config_vars[key]:
+                    sysconfig._config_vars[key] = sysconfig._config_vars[key].\
+                        replace(keyword, keywords[keyword])
+
+    # sysconfig._config_vars["OPT"] = \
+            # sysconfig._config_vars["OPT"].replace("-Wstrict-prototypes", "")
+    # sysconfig._config_vars["OPT"] = \
+            # sysconfig._config_vars["OPT"].replace("-O2", "-O3")
     sysconfig._config_vars["OPT"] = \
-            sysconfig._config_vars["OPT"].replace("-Wstrict-prototypes", "")
-    sysconfig._config_vars["OPT"] = \
-            sysconfig._config_vars["OPT"].replace("-O2", "-O3")
-    (os.environ["OPT"],) = sysconfig.get_config_vars("OPT")
+            sysconfig._config_vars["OPT"] + "-fopenmp"
+
+    # (os.environ["OPT"],) = sysconfig.get_config_vars("OPT")
 
 ################################ End VarDecl ###################################
 
@@ -67,19 +96,6 @@ def has_flag(compiler, flagname):
             return False
     return True
 
-
-def cpp_flag(compiler):
-    """Return the -std=c++[11/14] compiler flag.
-
-    The c++14 is prefered over c++11 (when it is available).
-    """
-    if has_flag(compiler, '-std=c++14'):
-        return '-std=c++14'
-    elif has_flag(compiler, '-std=c++11'):
-        return '-std=c++11'
-    else:
-        raise RuntimeError('Unsupported compiler -- at least C++11 support '
-                           'is needed!')
 class BuildExt(build_ext):
     """A custom build extension for adding compiler-specific options."""
     c_opts = {
@@ -99,7 +115,7 @@ class BuildExt(build_ext):
 
         if ct == 'unix':
             opts.append('-DVERSION_INFO="%s"' % self.distribution.get_version())
-            opts.append(cpp_flag(self.compiler))
+            opts.append("-std=c++11")
             if has_flag(self.compiler, '-fvisibility=hidden'):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
@@ -155,7 +171,7 @@ ext_modules = [
         ],
 
         extra_compile_args=extra_compile_args,
-        # extra_link_args=extra_link_args,
+        extra_link_args=extra_link_args,
         define_macros=[("USE_HWLOC", None), ("USE_LIBAIO", None),
                 ("USE_NUMA", None), ("STATISTICS", None)],
         libraries = ["graph", "safs", "rt", "z", "hwloc", "aio",
