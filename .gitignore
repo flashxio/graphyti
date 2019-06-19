@@ -2,3 +2,4 @@ build/
 graphyti/Exceptions/__pycache__
 graphyti/__pycache__
 .*
+*.pyc
