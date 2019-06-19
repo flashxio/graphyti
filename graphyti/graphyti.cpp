@@ -19,17 +19,18 @@ PYBIND11_MODULE(graphyti, m) {
      )pbdoc";
         // GMap
         py::class_<fg::CGraph>(m, "Graph")
-        .def(py::init(), "Create a Graph object")
-                //, py::return_value_policy::reference)
+        .def(py::init(), "Create a Graph object"
+                , py::return_value_policy::reference)
 
         .def(py::init<std::string, std::string, std::string>(),
             "Create a Graph object given adj list file, index file and "
-            "configuration file") //, py::return_value_policy::reference)
+            "configuration file",  py::return_value_policy::reference)
 
         .def("vcount", &fg::CGraph::vcount, "The number of vertices in the graph")
         .def("ecount", &fg::CGraph::ecount, "The number of edges in the graph")
         .def("is_directed", &fg::CGraph::is_directed, "Is the graph directed")
         .def("is_in_mem", &fg::CGraph::is_in_mem, "Is the graph in memory")
+
         /*Algorithms*/
         .def("coreness", &fg::CGraph::coreness,
                 "The coreness value / k-core decomposition of the graph.",
