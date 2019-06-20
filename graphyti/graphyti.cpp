@@ -7,6 +7,15 @@
 
 namespace py = pybind11;
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
+std::string get_home() {
+    struct passwd *pw = getpwuid(getuid());
+    return std::string(pw->pw_dir);
+}
+
 PYBIND11_MODULE(graphyti, m) {
     m.doc() = R"pbdoc(
          Python graphyti API
@@ -69,7 +78,13 @@ PYBIND11_MODULE(graphyti, m) {
                 "Strongly Connected components")
         .def("bfs_vcount", &fg::CGraph::bfs_vcount,
                 "Strongly Connected components",
-                py::arg("start_vertex")=-1, py::arg("edge_type")="both");
+                py::arg("start_vertex")=-1, py::arg("edge_type")="both")
+        .def("__repr__", &fg::CGraph::to_str,
+                "String representation of the graph")
+        .def("get_min_vertex_id", &fg::CGraph::min_id,
+                "Get the minimum vertex ID of the graph")
+        .def("get_max_vertex_id", &fg::CGraph::max_id,
+                "Get the maximum vertex ID of the graph");
 
         py::class_<fg::FileManager>(m, "FileManager")
         .def(py::init<const std::string&>(), "Create a File Manager object"

@@ -32,6 +32,21 @@ __default_config__ = {
         "merge_reqs" : ""
 }
 
+__default_configsfile_name__ = "graphyti-conf"
+__default_datalocation_name__ = "graphyti-data"
+
+def get_home_dir():
+    from os.path import expanduser
+    return expanduser("~")
+
+def default(param):
+    import os
+    if param == "configs":
+        return os.path.join(get_home_dir(), __default_configsfile_name__)
+    if param == "dataloc":
+        return os.path.join(get_home_dir(), __default_datalocation_name__)
+    raise RuntimeError("Unable to create default for parameter '{}'\n".format(param))
+
 class Configuration:
     @staticmethod
     def __write_configs(configs):
@@ -72,7 +87,8 @@ class Configuration:
                 type(configs)))
 
     @staticmethod
-    def create_default_configs(configs_filename, data_location):
+    def create_default_configs(configs_filename=default("configs"),
+            data_location=default("dataloc")):
         global __configsfile__
         global __datalocationfile__
 
@@ -93,6 +109,11 @@ class Configuration:
         __configsfile__ = configs_filename
 
         Configuration.__write_configs(configs)
+
+        print("Configuration file: '{}'\nData Location: '{}'".format(
+            __configsfile__, __datalocationfile__))
+
+        return {"configs":__configsfile__, "dataloc":__datalocationfile__}
 
     # Not yet fool proof
     @staticmethod
