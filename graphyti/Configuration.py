@@ -96,11 +96,17 @@ class Configuration:
 
     # Not yet fool proof
     @staticmethod
-    def get_configs(configs_filename):
+    def get_configs(configs_filename=__configsfile__):
+        import os
+        if not os.path.exists(configs_filename):
+            raise RuntimeError("Configuration file '{}' "+\
+                    "not found!\n".format(configs_filename))
+
         config_map = {}
         with open(configs_filename, "rb") as file:
             data = file.readlines()
-            for line in map((lambda x : x.encode("UTF-8")), data):
+            # for line in map((lambda x : x.encode("UTF-8")), data):
+            for line in data:
                 if line:
                     cleaned_line = "".join(line.strip().split())
                     params = cleaned_line.split("=")

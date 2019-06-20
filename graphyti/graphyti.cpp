@@ -3,6 +3,7 @@
 #include <pybind11/operators.h>
 
 #include "src/flash-graph/bindings/CGraph.h"
+#include "src/utils/FileManager.h"
 
 namespace py = pybind11;
 
@@ -68,8 +69,31 @@ PYBIND11_MODULE(graphyti, m) {
                 "Strongly Connected components")
         .def("bfs_vcount", &fg::CGraph::bfs_vcount,
                 "Strongly Connected components",
-                py::arg("start_vertex")=-1, py::arg("edge_type")="both")
-        ;
+                py::arg("start_vertex")=-1, py::arg("edge_type")="both");
+
+        py::class_<fg::FileManager>(m, "FileManager")
+        .def(py::init<const std::string&>(), "Create a File Manager object"
+                , py::return_value_policy::reference)
+        .def("delete", &fg::FileManager::delete_file,
+                "Delete a file from SAFS")
+        .def("export", &fg::FileManager::from_ex_mem,
+                "Export files from SAFS to the local file system",
+                py::arg("local_fs_filename"), py::arg("safs_filename"))
+        .def("load", &fg::FileManager::to_ex_mem,
+                "Load files into SAFS",
+                py::arg("safs_filename"), py::arg("local_fs_filename"),
+                py::arg("block_size"))
+        .def("rename", &fg::FileManager::rename,
+                "Rename files in SAFS",
+                py::arg("filename"), py::arg("new_filename"))
+        .def("list", &fg::FileManager::list_files,
+                "List all files in SAFS")
+        .def("file_exists", &fg::FileManager::file_exists,
+                "Determine if the file exists in SAFS")
+        .def("file_size", &fg::FileManager::file_size,
+                "Determine the size of the file in SAFS")
+        .def("info", &fg::FileManager::info,
+                "Get info on a file");
 
     // Versioning information
 #ifdef VERSION_INFO

@@ -65,3 +65,5 @@ Configuration.verify_configs(c)
 # Verify updated
 os.remove(conffn)
 os.removedirs(datafn)
+
+print("TEST configuration.py successful!\n")
