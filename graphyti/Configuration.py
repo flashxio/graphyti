@@ -94,8 +94,15 @@ class Configuration:
 
         import os
         if os.path.exists(configs_filename):
-            raise RuntimeError("Configuration file '{}' "+\
-                    "already exists!\n".format(configs_filename))
+            print("Configuration file '{}' already exists!\n".format(
+                configs_filename))
+
+            c = Configuration.get_configs(configs_filename)
+            if not "root_conf" in c:
+                raise RuntimeError("Configuration file missing param " +\
+                    "`root_conf` with SAFS data location")
+            else:
+                return {"configs":configs_filename, "dataloc": c["root_conf"]}
 
         # TODO Remove assumptions about the hardware
         # I.E: Memory size, # NUMA nodes, Cache Size
@@ -120,14 +127,16 @@ class Configuration:
     def get_configs(configs_filename=__configsfile__):
         import os
         if not os.path.exists(configs_filename):
-            raise RuntimeError("Configuration file '{}' "+\
-                    "not found!\n".format(configs_filename))
+            raise RuntimeError("Configuration file '{}' not found!\n".format(
+                configs_filename))
 
         config_map = {}
         with open(configs_filename, "rb") as file:
             data = file.readlines()
             # for line in map((lambda x : x.encode("UTF-8")), data):
             for line in data:
+                if type(line) == bytes:
+                    line = line.decode("UTF-8")
                 if line:
                     cleaned_line = "".join(line.strip().split())
                     params = cleaned_line.split("=")

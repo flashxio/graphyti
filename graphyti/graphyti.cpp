@@ -96,8 +96,7 @@ PYBIND11_MODULE(graphyti, m) {
                 py::arg("local_fs_filename"), py::arg("safs_filename"))
         .def("load", &fg::FileManager::to_ex_mem,
                 "Load files into SAFS",
-                py::arg("safs_filename"), py::arg("local_fs_filename"),
-                py::arg("block_size"))
+                py::arg("safs_filename"), py::arg("local_fs_filename"))
         .def("rename", &fg::FileManager::rename,
                 "Rename files in SAFS",
                 py::arg("filename"), py::arg("new_filename"))
@@ -108,7 +107,9 @@ PYBIND11_MODULE(graphyti, m) {
         .def("file_size", &fg::FileManager::file_size,
                 "Determine the size of the file in SAFS")
         .def("info", &fg::FileManager::info,
-                "Get info on a file");
+                "Get info on a file")
+        .def("__repr__", &fg::FileManager::to_str,
+                "String representation of the File Manager");
 
     // Versioning information
 #ifdef VERSION_INFO
