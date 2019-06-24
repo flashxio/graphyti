@@ -2,18 +2,22 @@
 
 import graphyti as gt
 
-### Configure the I/O system
+### Configure the I/O system (Only done once )
 c = gt.Configuration.create_default_configs() # Accept defaults
 
 ### Load up a graph into the I/O system
 
 fm = gt.FileManager(c["configs"]) # Pass the file manager the configuration file
 
-adj_fn = "test-d.adj"
-idx_fn = "test-d.idx"
+### Convert the adjacency list file into a graphyti format and load into SAFS
 
-fm.load(adj_fn, adj_fn) # Assumes `test-d.adj` is in the current working dir
-fm.load(idx_fn, idx_fn) # Assumes `test-d.idx` is in the current working dir
+f = gt.Format(c["configs"]))
+adj_fn, idx_fn = f.load("test-graph.txt") # Default file names
+
+### One could also manually load the adjacency and index files
+# Not run
+# fm.load(adj_fn, adj_fn) # Assumes `test-d.adj` is in the current working dir
+# fm.load(idx_fn, idx_fn) # Assumes `test-d.idx` is in the current working dir
 
 ### Verify the `test-u.adj` is loaded into I/O system
 print(fm.list())
