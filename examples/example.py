@@ -11,7 +11,7 @@ fm = gt.FileManager(c["configs"]) # Pass the file manager the configuration file
 
 ### Convert the adjacency list file into a graphyti format and load into SAFS
 
-f = gt.Format(c["configs"]))
+f = gt.Format(c["configs"])
 adj_fn, idx_fn = f.load("test-graph.txt") # Default file names
 
 ### One could also manually load the adjacency and index files

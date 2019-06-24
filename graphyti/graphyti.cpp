@@ -20,7 +20,14 @@ std::string get_home() {
 // Helpers for scripting tasks -- cleaner in python
 static std::string get_basename(const std::string& s) {
     py::object os_path = py::module::import("os.path");
-    return (os_path.attr("basename")(s)).cast<std::string>();
+
+    return os_path.attr("basename")(s).cast<std::string>();
+}
+
+static std::vector<std::string> splitext(const std::string& s) {
+    py::object os_path = py::module::import("os.path");
+
+    return os_path.attr("splitext")(s).cast<std::vector<std::string> >();
 }
 
 static void delete_file(const std::string& s) {
@@ -53,27 +60,25 @@ class Format {
         if (configs.empty())
             throw std::runtime_error("Configuration file must be set first");
 
-        std::string bn = get_basename(edgelist);
+        std::string bn = splitext(get_basename(edgelist))[0];
         std::string adj_fn = bn+std::string(".adj");
         std::string idx_fn = bn+std::string(".idx");
 
         std::vector<std::string> els { edgelist };
 
-        //fg::utils::el2fg(els, adj_fn, idx_fn, directed,
-            //nthread, NULL, false, true, false,
-            //0, 0, "", ".");
-
         fg::utils::el2fg(els, adj_fn, idx_fn, directed);
+
         fg::FileManager fm(configs);
 
-        //// Load the adjacency list and index file
+        // Load the adjacency list and index file
         fm.to_ex_mem(adj_fn, adj_fn);
         fm.to_ex_mem(idx_fn, idx_fn);
 
-        //// Delete the temps
+        // Delete the temps
         delete_file(adj_fn);
         delete_file(idx_fn);
 
+        // Delete the temps
         return std::pair<std::string, std::string>(adj_fn, idx_fn);
     }
 };
