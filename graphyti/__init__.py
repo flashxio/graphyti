@@ -5,9 +5,11 @@ if PYTHON_VERSION == 2:
     from graphyti import Graph
     from graphyti import FileManager
     from Configuration import Configuration
+    from graphyti import Format
     from Exceptions.runtime import *
 else:
     from .graphyti import Graph
     from .graphyti import FileManager
     from .Configuration import Configuration
+    from .graphyti import Format
     from .Exceptions.runtime import *

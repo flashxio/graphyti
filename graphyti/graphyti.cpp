@@ -4,17 +4,79 @@
 
 #include "src/flash-graph/bindings/CGraph.h"
 #include "src/utils/FileManager.h"
-
-namespace py = pybind11;
+#include "src/flash-graph/utils/el2fg.h"
 
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
 
+namespace py = pybind11;
+
 std::string get_home() {
     struct passwd *pw = getpwuid(getuid());
     return std::string(pw->pw_dir);
 }
+
+// Helpers for scripting tasks -- cleaner in python
+static std::string get_basename(const std::string& s) {
+    py::object os_path = py::module::import("os.path");
+    return (os_path.attr("basename")(s)).cast<std::string>();
+}
+
+static void delete_file(const std::string& s) {
+    py::object os = py::module::import("os");
+    os.attr("remove")(s);
+}
+
+class Format {
+    private:
+    std::string configs;
+
+    public:
+    Format(const std::string& configs): configs(configs) {
+    }
+
+    void set_configs(const std::string& configs) {
+        this->configs = configs;
+    }
+
+    void edge2graphyti(std::vector<std::string> edgelists, std::string adj_fn,
+            std::string index_fn, bool directed, int nthread) {
+        fg::utils::el2fg(edgelists, adj_fn, index_fn, directed, nthread);
+    }
+
+    std::pair<std::string, std::string> load(
+            std::string edgelist, bool directed, int nthread) {
+        if (edgelist.empty())
+            return std::pair<std::string, std::string>("", "");
+
+        if (configs.empty())
+            throw std::runtime_error("Configuration file must be set first");
+
+        std::string bn = get_basename(edgelist);
+        std::string adj_fn = bn+std::string(".adj");
+        std::string idx_fn = bn+std::string(".idx");
+
+        std::vector<std::string> els { edgelist };
+
+        //fg::utils::el2fg(els, adj_fn, idx_fn, directed,
+            //nthread, NULL, false, true, false,
+            //0, 0, "", ".");
+
+        fg::utils::el2fg(els, adj_fn, idx_fn, directed);
+        fg::FileManager fm(configs);
+
+        //// Load the adjacency list and index file
+        fm.to_ex_mem(adj_fn, adj_fn);
+        fm.to_ex_mem(idx_fn, idx_fn);
+
+        //// Delete the temps
+        delete_file(adj_fn);
+        delete_file(idx_fn);
+
+        return std::pair<std::string, std::string>(adj_fn, idx_fn);
+    }
+};
 
 PYBIND11_MODULE(graphyti, m) {
     m.doc() = R"pbdoc(
@@ -27,7 +89,7 @@ PYBIND11_MODULE(graphyti, m) {
             :toctree: _generate
 
      )pbdoc";
-        // GMap
+        // Graph
         py::class_<fg::CGraph>(m, "Graph")
         .def(py::init(), "Create a Graph object"
                 , py::return_value_policy::reference)
@@ -86,6 +148,7 @@ PYBIND11_MODULE(graphyti, m) {
         .def("get_max_vertex_id", &fg::CGraph::max_id,
                 "Get the maximum vertex ID of the graph");
 
+    // File Manager
         py::class_<fg::FileManager>(m, "FileManager")
         .def(py::init<const std::string&>(), "Create a File Manager object"
                 , py::return_value_policy::reference)
@@ -110,6 +173,21 @@ PYBIND11_MODULE(graphyti, m) {
                 "Get info on a file")
         .def("__repr__", &fg::FileManager::to_str,
                 "String representation of the File Manager");
+
+        py::class_<Format>(m, "Format")
+            .def(py::init<const std::string&>(),
+                "Create a Format converter object",
+                py::arg("configs")="",
+                py::return_value_policy::reference)
+        .def("edge2graphyti", &Format::edge2graphyti,
+                "Convert edge list(s) to graphyti format",
+                py::arg("edgelists"), py::arg("adj_fn"),
+                py::arg("index_fn"),
+                py::arg("directed")=true, py::arg("nthread")=4)
+        .def("load", &Format::load,
+                "Convert edge list(s) to graphyti format and load into SAFS",
+                py::arg("edgelist"),
+                py::arg("directed")=true, py::arg("nthread")=4);
 
     // Versioning information
 #ifdef VERSION_INFO
