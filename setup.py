@@ -148,7 +148,8 @@ _include_dirs = [".",
         ]
 
 extra_compile_args = ["-std=c++11", "-DUSE_HWLOC",
-    "-DUSE_LIBAIO", "-DUSE_NUMA","-mavx", "-fPIC", "-DSTATISTICS", "-fopenmp",
+    "-DUSE_LIBAIO", "-DUSE_NUMA","-mavx", "-fPIC", "-DSTATISTICS",
+    "-DIGNORE_PRINTF", "-fopenmp",
         "-Wno-attributes", "-Wno-unused-variable", "-Wno-unused-function", "-MD"
         ]
 
@@ -173,7 +174,8 @@ ext_modules = [
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         define_macros=[("USE_HWLOC", None), ("USE_LIBAIO", None),
-                ("USE_NUMA", None), ("STATISTICS", None)],
+                ("USE_NUMA", None), ("STATISTICS", None),
+                ("IGNORE_PRINTF", None)],
         libraries = ["graph", "safs", "rt", "z", "hwloc", "aio",
             "numa", "pthread"],
         extra_objects=["-fopenmp"],
@@ -194,7 +196,7 @@ class graphyti_clib(build_clib, object):
                 os.path.join("graphyti", "src", "flash-graph", "utils"),
                 ]
         self.define = [ ("USE_HWLOC", None), ("USE_LIBAIO", None),
-                ("USE_NUMA", None), ("STATISTICS", None)]
+                ("USE_NUMA", None), ("STATISTICS", None), ("IGNORE_PRINTF", None)]
 
     def build_libraries(self, libraries):
         for (lib_name, build_info) in libraries:
