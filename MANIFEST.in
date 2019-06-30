@@ -2,5 +2,7 @@ include graphyti/src/libsafs/*.h
 include graphyti/src/flash-graph/*.h
 include graphyti/src/flash-graph/bindings/*.h
 include graphyti/src/flash-graph/utils/el2fg.h
-include graphyti/*.pyx
+include graphyti/src/flash-graph/libgraph-algs/*.h*
+include graphyti/src/flash-graph/graphlab/*.h*
+include graphyti/src/utils/*.h*
 include *.py

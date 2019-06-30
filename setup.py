@@ -61,7 +61,7 @@ if OS == _OS_SUPPORTED_["linux"]:
     # sysconfig._config_vars["OPT"] = \
             # sysconfig._config_vars["OPT"].replace("-O2", "-O3")
     sysconfig._config_vars["OPT"] = \
-            sysconfig._config_vars["OPT"] + "-fopenmp"
+            sysconfig._config_vars["OPT"] + " -fopenmp"
 
     # (os.environ["OPT"],) = sysconfig.get_config_vars("OPT")
 
