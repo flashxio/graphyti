@@ -457,26 +457,58 @@ PYBIND11_MODULE(graphyti, m) {
         .def(py::init<const std::string&>(),
         R"pbdoc(
         Create a File Manager object
+
+        Positional arguments:
+        --------------------
+        config_file:
+            - The location of the configuration file on disk
         )pbdoc",
+                py::arg("config_file")="",
                 py::return_value_policy::reference)
         .def("delete", &fg::FileManager::delete_file,
         R"pbdoc(
         Delete a file from SAFS
+
+        Positional arguments:
+        --------------------
+        filename:
+            - The name of the file in SAFS
         )pbdoc",
-        py::arg("file_name"))
+        py::arg("filename"))
         .def("export", &fg::FileManager::from_ex_mem,
         R"pbdoc(
         Export files from SAFS to the local file system
+
+        Positional arguments:
+        --------------------
+        local_fs_filename:
+            - The path and file name requested in the local file system
+        safs_fs_filename:
+            - The filename in SAFS
         )pbdoc",
                 py::arg("local_fs_filename"), py::arg("safs_filename"))
         .def("load", &fg::FileManager::to_ex_mem,
         R"pbdoc(
         Load files into SAFS"
+
+        Positional arguments:
+        --------------------
+        safs_fs_filename:
+            - The filename to be created in SAFS
+        local_fs_filename:
+            - The path and file name of the file in the local file system
         )pbdoc",
                 py::arg("safs_filename"), py::arg("local_fs_filename"))
         .def("rename", &fg::FileManager::rename,
         R"pbdoc(
         Rename files in SAFS
+
+        Positional arguments:
+        --------------------
+        filename:
+            - The current file name within the SAFS
+        new_filename:
+            - The new file name within the SAFS
         )pbdoc",
                 py::arg("filename"), py::arg("new_filename"))
         .def("list", &fg::FileManager::list_files,
@@ -486,18 +518,33 @@ PYBIND11_MODULE(graphyti, m) {
         .def("file_exists", &fg::FileManager::file_exists,
         R"pbdoc(
         Determine if the file exists in SAFS
+
+        Positional arguments:
+        --------------------
+        filename:
+            - The name of the file being queried
         )pbdoc",
                 py::arg("filename")
         )
         .def("file_size", &fg::FileManager::file_size,
         R"pbdoc(
         Determine the size of the file in SAFS
+
+        Positional arguments:
+        --------------------
+        filename:
+            - The name of the file being queried
         )pbdoc",
                 py::arg("filename")
         )
         .def("info", &fg::FileManager::info,
         R"pbdoc(
         Get info on a file
+
+        Positional arguments:
+        --------------------
+        filename:
+            - The name of the file being queried
         )pbdoc",
                 py::arg("filename")
         )
@@ -508,16 +555,46 @@ PYBIND11_MODULE(graphyti, m) {
 
         py::class_<Format>(m, "Format")
             .def(py::init<const std::string&>(),
-                "Create a Format converter object",
+        R"pbdoc(
+        Create a Format converter object
+
+        Positional arguments:
+        --------------------
+        configs:
+            - Configuration file name
+        )pbdoc",
                 py::arg("configs")="",
                 py::return_value_policy::reference)
         .def("edge2graphyti", &Format::edge2graphyti,
-                "Convert edge list(s) to graphyti format",
+        R"pbdoc(
+        Convert edge list(s) to graphyti format
+
+        Positional arguments:
+        --------------------
+        edgelists:
+            - A list of files that contains the edge lists for the graph
+                in plain text
+        adj_fn:
+            - The requested adjacency list file name in
+        index_fn:
+            - The requested index list file name
+        )pbdoc",
                 py::arg("edgelists"), py::arg("adj_fn"),
                 py::arg("index_fn"),
                 py::arg("directed")=true, py::arg("nthread")=4)
         .def("load", &Format::load,
-                "Convert edge list(s) to graphyti format and load into SAFS",
+        R"pbdoc(
+        Convert edge list(s) to graphyti format and load into SAFS
+
+        Positional arguments:
+        --------------------
+        edgelist:
+            - An edge list file for a graph in plain text
+        adj_fn:
+            - The requested adjacency list file name in
+        index_fn:
+            - The requested index list file name
+        )pbdoc",
                 py::arg("edgelist"),
                 py::arg("directed")=true, py::arg("nthread")=4);
 
