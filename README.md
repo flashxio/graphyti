@@ -33,17 +33,24 @@ pip install graphyti
 
 ## Graph Conversion
 
-TODO:
-- From file
-- From in-memory
-- To edge list
+Edge lists in plain text format can be converted to the FlashGraph format which
+creates an adjacency list file and an index file that can then be ingested into
+SAFS or used directed from the local filesystem for in-memory computation.
+One can do so as follows:
+
+```
+import graphyti as gt
+
+formatter = gt.Format("location/of/configuration/file")
+formatter.edge2graphyti("location/of/edgelist.txt",
+    "location/of/adjacencylist.adj", "location/of/index.idx")
+```
 
 ## Out of core (External Memory) configuration
 
 Automated configuration is a way to get started, but will not provide the best
 performance for your system. We recommend tuning the parameters according to the
-documentation [here](
-https://www.aafnation.com/products/trump-train?variant=28583171031101).
+documentation [here](https://github.com/flashxio/FlashX/wiki/SAFS-user-manual).
 
 ### Automated configuration
 
@@ -52,7 +59,15 @@ import graphyti as gt
 c = gt.Configuration.create_default_configs()
 ```
 
-# Usage
+## Docker
+
+To build and run Graphyti using docker we provide a `Dockerfile`. Simply:
+
+```
+docker build -t graphyti .
+docker run -i -t graphyi
+```
+
+## Usage
 
 We provide use case examples in the `example` directory.
-
