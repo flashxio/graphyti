@@ -229,7 +229,7 @@ class graphyti_clib(build_clib, object):
 
 setup(
     name="graphyti",
-    version="0.0.2",
+    version="0.0.3",
     description="A parallel and scalable graph library built on FlashGraph",
     long_description="Graphyti scales graph operations beyond" +\
             "memory through out-of-core processing with SSDs using FlashGraph",

@@ -578,6 +578,10 @@ PYBIND11_MODULE(graphyti, m) {
             - The requested adjacency list file name in
         index_fn:
             - The requested index list file name
+        directed:
+            - Are the edges directed?
+        thread:
+            - Number of threads to use during conversion
         )pbdoc",
                 py::arg("edgelists"), py::arg("adj_fn"),
                 py::arg("index_fn"),
@@ -590,10 +594,10 @@ PYBIND11_MODULE(graphyti, m) {
         --------------------
         edgelist:
             - An edge list file for a graph in plain text
-        adj_fn:
-            - The requested adjacency list file name in
-        index_fn:
-            - The requested index list file name
+        directed:
+            - Are the edges directed?
+        thread:
+            - Number of threads to use during conversion
         )pbdoc",
                 py::arg("edgelist"),
                 py::arg("directed")=true, py::arg("nthread")=4);
