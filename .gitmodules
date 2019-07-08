@@ -1,0 +1,4 @@
+[submodule "graphyti/src"]
+	path = graphyti/src
+	url = https://github.com/flashxio/FlashX.git
+	branch = graphyti
