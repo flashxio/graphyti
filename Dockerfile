@@ -16,10 +16,9 @@ RUN apt-get -y install \
         libatlas-base-dev \
         libgoogle-perftools-dev \
         libaio-dev libatlas-base-dev zlib1g-dev \
-        libnuma-dev libhwloc-dev \
-        libboost-all-dev
+        libnuma-dev libhwloc-dev
 
-RUN apt-get remove python-setuptools python3-setuptool
+RUN apt-get remove -y python-setuptools python3-setuptools
 
 # To ingest example
 RUN pip install --upgrade pip
@@ -27,7 +26,7 @@ RUN pip install --upgrade setuptools pybind11 numpy
 RUN apt-get -y install python3
 RUN apt-get -y install python3-pip
 RUN pip3 install --upgrade pip
-RUN pip3 install setuptools pybind11 numpy
+RUN pip3 install --upgrade setuptools pybind11 numpy
 
 WORKDIR /home/ubuntu/
 RUN git clone --recursive https://github.com/flashxio/graphyti.git

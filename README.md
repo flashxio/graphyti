@@ -65,7 +65,20 @@ To build and run Graphyti using docker we provide a `Dockerfile`. Simply:
 
 ```
 docker build -t graphyti .
-docker run -i -t graphyi
+docker run -i -t graphyti
+```
+
+To simply download a stable (but possibly out of date) docker image:
+
+```
+docker run -i -t flashxio/graphyti
+```
+
+If you already have the *graphyti* docker image then updating to the newest
+stable release can be done as follows:
+
+```
+docker pull flashxio/graphyti
 ```
 
 ## Usage
